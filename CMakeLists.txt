@@ -15,7 +15,6 @@ if( CMAKE_BINARY_DIR MATCHES " " )
 	message( "Your Build Directory contains spaces. If you experience problems when compiling, this can be the cause." )
 endif()
 
-
 # Compile external dependencies 
 add_subdirectory (external)
 
@@ -29,9 +28,8 @@ if(INCLUDE_DISTRIB)
 	add_subdirectory(distrib)
 endif(INCLUDE_DISTRIB)
 
-
 include_directories(
-	external/glfw-3.1.2/include/GLFW/
+	external/glfw-3.1.2/include/
 	external/glm-0.9.7.1/
 	external/glew-1.13.0/include/
 	external/enet-1.3.17/include/
