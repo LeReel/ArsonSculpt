@@ -1,0 +1,15 @@
+# git rm --cached to stop tracking a file that is currently tracked
+
+bin/
+obj/
+x64/
+OGLMake/
+
+.idea/
+
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+
+*.vcxproj
+*.filters
