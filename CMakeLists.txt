@@ -54,6 +54,8 @@ add_executable(ArsonS_GL
 	src/Scripts/main.cpp
 	
 	#Add new scripts here
+	src/Scripts/Application/Public/AS_Application.h
+	src/Scripts/Application/Private/AS_Application.cpp
 	
 	common/shader.cpp
 	common/shader.hpp
@@ -64,8 +66,8 @@ add_executable(ArsonS_GL
 	common/objloader.cpp
 	common/objloader.hpp
 
-	src/TransformVertexShader.vertexshader
-	src/TextureFragmentShader.fragmentshader
+	src/SimpleVertexShader.vertexshader
+	src/SimpleFragmentShader.fragmentshader
 )
 target_link_libraries(ArsonS_GL
 	${ALL_LIBS}
@@ -74,8 +76,8 @@ target_link_libraries(ArsonS_GL
 set_target_properties(ArsonS_GL PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ArsonS_GL/")
 create_target_launcher(ArsonS_GL WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ArsonS_GL/")
 
-SOURCE_GROUP(common REGULAR_EXPRESSION ".*/common/.*" )
-SOURCE_GROUP(shaders REGULAR_EXPRESSION ".*/.*shader$" )
+SOURCE_GROUP(common REGULAR_EXPRESSION ".*/common/.*")
+SOURCE_GROUP(shaders REGULAR_EXPRESSION ".*/.*shader$")
 
 
 if (NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
