@@ -9,21 +9,21 @@ public:
     int Run();
 
 private:
+    void MainLoop();
+
     int Init();
+    int InitGLModules();
+    
     int InitGLFW();
     void SetWindowHints();
     int OpenWindow();
-    int InitGLEW();
     
-    //Create a VertexArrayObject (contains Vertex Buffer Objects, it stores the information for a complete rendered object
-    void CreateVAO();
-    /**
-     * \brief This needs to be done only once
-     * \param _data Pointer to data that will be copied into the data store for init
-     */
-    void CreateBuffer(const void* _data);
+    int InitGLEW();
 
-    void BuildAndCompileShaders();
+    void CreateVAO();
+    void CreateVBO();
 
     void DrawTriangle();
+
+    void DeallocateAllResources();
 };
