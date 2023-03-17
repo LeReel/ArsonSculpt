@@ -66,8 +66,8 @@ add_executable(ArsonS_GL
 	common/objloader.cpp
 	common/objloader.hpp
 
-	src/SimpleVertexShader.vertexshader
-	src/SimpleFragmentShader.fragmentshader
+	src/SimpleVertexShader.glsl
+	src/SimpleFragmentShader.glsl
 )
 target_link_libraries(ArsonS_GL
 	${ALL_LIBS}

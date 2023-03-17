@@ -93,7 +93,7 @@ int AS_Application::Init()
 
     // Ensure we can capture the escape key being pressed below
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-    glClearColor(0, 0, 1, 1);
+    glClearColor(1, .6f, 0, 1);
 
     return 0;
 }
