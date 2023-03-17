@@ -21,6 +21,9 @@ private:
     int InitGLEW();
 
     void CreateVAO();
+    //VBO stores vertices in GPU's memory
+    //Sending data to the GPU from the CPU is relatively slow
+    //So wherever we can, send as much data as possible at once
     void CreateVBO();
 
     void DrawTriangle();
