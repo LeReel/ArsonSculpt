@@ -46,8 +46,8 @@ int AS_Application::Run()
     CreateVAO();
     CreateVBO();
 
-    shaderProgram = LoadShaders("../src/SimpleVertexShader.vertexshader",
-                                "../src/SimpleFragmentShader.fragmentshader");
+    shaderProgram = LoadShaders("../src/SimpleVertexShader.glsl",
+                                "../src/SimpleFragmentShader.glsl");
 
     GLfloat g_vertex_buffer_data[] = {
         -1.0f, -1.0f, 0.0f,
