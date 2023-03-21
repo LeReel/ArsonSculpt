@@ -25,6 +25,8 @@ GLFWwindow* window;
 GLuint vertexArrayID;
 // This will identify our vertex buffer
 GLuint vertexBufferID;
+// This will identify our element buffer
+GLuint elementBufferID;
 // And this will identify our shader program
 GLuint shaderProgram;
 
@@ -44,31 +46,67 @@ int AS_Application::Run()
     }
 
     CreateVAO();
-    CreateVBO();
 
+    CreateVBO(2);
+    CreateEBO();
 
-    GLfloat triangle_vertex_buffer[] = {
-        -0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
+    // GLfloat triangleVertices1[] = {
+    //     -1.0f, -1.0f, 0.0f,
+    //     -0.5f, -0.25f, 0.0f,
+    //     -1.0f, -0.25f, 0.0f,
+    // };
+    // GLfloat triangleVertices2[] = {
+    //     0.25f, 0.25f, 0.0f,
+    //     0.5f, 1.0f, 0.0f,
+    //     0.75f, 0.25f, 0.0f,
+    // };
+    // glBufferData(
+    //     GL_ARRAY_BUFFER,
+    //     sizeof(triangleVertices1),
+    //     triangleVertices1,
+    //     GL_STATIC_DRAW
+    // );
+    // glBufferData(
+    //     GL_ARRAY_BUFFER,
+    //     sizeof(triangleVertices2),
+    //     triangleVertices2,
+    //     GL_STATIC_DRAW
+    // );
+
+    GLfloat rectangleVertices1[] = {
+        0.5f, 0.5f, 0.0f, // top right
+        0.5f, -0.5f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f, // bottom left
+        -0.5f, 0.5f, 0.0f // top left 
     };
 
-    // Give our vertices to OpenGL.
-    // Specifically targeted to copy user-defined data into the currently bound buffer
-    // 1st arg = type of the buffer we want to copy data into
-    // 2nd arg = size (in bytes) of the dat awe want to pass to the buffer
-    // 3rd arg = actual data we want to pass
-    // 4th arg = how we want the GPU to manage the given data:
-    // GL_STREAM_DRAW:  data is set only once / used at most a few times by the GPU.
-    // GL_STATIC_DRAW:  data is set only once / used many times by the GPU.
-    // GL_DYNAMIC_DRAW: data is changed a lot / used many times by the GPU.
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_vertex_buffer), triangle_vertex_buffer, GL_STATIC_DRAW);
-    // As of now, vertex data is stored in GPU memory and managed by a VBO
+    // Give our vertices to OpenGL (stores user-defined data into GPU memory; those data are managed by the currently bound buffer)
+    //? GL_STREAM_DRAW:  data is set only once / used at most a few times by the GPU.
+    //? GL_STATIC_DRAW:  data is set only once / used many times by the GPU.
+    //? GL_DYNAMIC_DRAW: data is changed a lot / used many times by the GPU.
+    glBufferData(
+        GL_ARRAY_BUFFER, //Type of the buffer we want to copy data into
+        sizeof(rectangleVertices1), //Size (in bytes) of the dat awe want to pass to the buffer
+        rectangleVertices1, //Actual data we want to pass
+        GL_STATIC_DRAW //How we want the GPU to manage the given data
+    );
+
+    //? Element Buffer Object (EBO) is a buffer that stores indices that GL uses to decide what vertices to draw.
+    //? This is called Indexed Drawing and avoids repeating vertices that overlap (as we draw mainly in triangles)
+    GLuint _indices[] = {
+        0, 1, 3,
+        1, 2, 3
+    };
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
+        sizeof(_indices),
+        _indices,
+        GL_STATIC_DRAW);
 
     // Shaders will process this data
     shaderProgram = LoadShaders("../src/SimpleVertexShader.glsl",
                                 "../src/SimpleFragmentShader.glsl");
-    
+
     // Check if the ESC key was pressed or the window was closed
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0)
     {
@@ -87,9 +125,14 @@ void AS_Application::MainLoop()
     //Watch out, can cause flickering
     glClear(GL_COLOR_BUFFER_BIT);
 
+    //Every shader and rendering call after this will use given program
     glUseProgram(shaderProgram);
 
-    DrawTriangle();
+    //Any subsequent VBO, EBO, glVertexAttribPointer() and glEnableVertexAttribArray calls
+    //will be stored inside the VAO currently bound
+    glBindVertexArray(vertexArrayID);
+
+    Draw();
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -164,7 +207,7 @@ int AS_Application::OpenWindow()
     {
         fprintf(
             stderr,
-            "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
+            "Failed to open GLFW window.\n");
         getchar();
         glfwTerminate();
         return -1;
@@ -187,40 +230,49 @@ int AS_Application::InitGLEW()
 
 void AS_Application::CreateVAO()
 {
-    //Create a VertexArrayObject (contains Vertex Buffer Objects, it stores the information for a complete rendered object
+    //Create a VertexArrayObject that stores:
+    //? - Calls to glEnable/disableVertexAttribArray
+    //? - Attribute configurations via glVertexAttribPointer
+    //? - VBO associated with vertex attributes by calls to glVertexAttribPointer()
     glGenVertexArrays(1, &vertexArrayID);
     glBindVertexArray(vertexArrayID);
 }
 
-void AS_Application::CreateVBO()
+void AS_Application::CreateVBO(int _amnt)
 {
     // Generate 1 buffer, put the resulting identifier in vertexbuffer
-    glGenBuffers(1, &vertexBufferID);
+    glGenBuffers(_amnt, &vertexBufferID);
 
     //GL has many types of buffer objects. VBO's type is GL_ARRAY_BUFFER
     //GL allows us to bind to several buffers at once as long as they have a different buffer type
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 }
 
-void AS_Application::DrawTriangle()
+void AS_Application::CreateEBO()
+{
+    glGenBuffers(1, &elementBufferID);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferID);
+}
+
+void AS_Application::Draw()
 {
     glVertexAttribPointer(
         0, // Which vertex attribute we want to configure
         3, // Size of the vertex attribute
         GL_FLOAT, // Type of data
         GL_FALSE, // normalized?
-        0, // stride
+        0, // stride (the space between consecutive vertex attributes)
         (void*)0 // array buffer offset
     );
-    glEnableVertexAttribArray(0);
-    glBindVertexArray(vertexArrayID);
+    //? Each vertex attribute takes its data from memory managed by a VBO.
+    //? Which VBO it takes its data from is the one bound to GL_ARRAY_BUFFER when calling glVertexAttribPointer()
 
-    // Each vertex attribute takes its data from memory managed by a VBO.
-    // Which VBO it takes its data from (can have multiple VBOs) is determined by
-    // the VBO currently bound to GL_ARRAY_BUFFER when calling glVertexAttribPointer
+    //Activates vertex attribute (its location as param)
+    glEnableVertexAttribArray(0);
     
-    // Draw the triangle !
-    glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+    //glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    
     glDisableVertexAttribArray(0);
 }
 

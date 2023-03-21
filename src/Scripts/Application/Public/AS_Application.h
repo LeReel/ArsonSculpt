@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 class AS_Application
 {
@@ -13,20 +14,21 @@ private:
 
     int Init();
     int InitGLModules();
-    
+
     int InitGLFW();
     void SetWindowHints();
     int OpenWindow();
-    
+
     int InitGLEW();
 
     void CreateVAO();
     //VBO stores vertices in GPU's memory
     //Sending data to the GPU from the CPU is relatively slow
     //So wherever we can, send as much data as possible at once
-    void CreateVBO();
+    void CreateVBO(int _amnt);
+    void CreateEBO();
 
-    void DrawTriangle();
+    void Draw();
 
     void DeallocateAllResources();
 };
