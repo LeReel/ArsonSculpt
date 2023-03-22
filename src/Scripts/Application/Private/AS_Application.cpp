@@ -1,5 +1,7 @@
 #include "AS_Application.h"
 
+#include "AS_Shader.h"
+
 //Declare window as global otherwise create an unresolved ext. error
 GLFWwindow* window;
 
@@ -140,10 +142,10 @@ int AS_Application::Run()
 
 
     // Shaders will process this data
-    shaderPrograms[0] = LoadShaders("../src/SimpleVertexShader.glsl",
-                                    "../src/SimpleFragmentShader.glsl");
-    shaderPrograms[1] = LoadShaders("../src/SecondVertexShader.glsl",
-                                    "../src/SecondFragmentShader.glsl");
+    // shaderPrograms[0] = LoadShaders("../src/SimpleVertexShader.glsl",
+    //                                 "../src/SimpleFragmentShader.glsl");
+    // shaderPrograms[1] = LoadShaders("../src/SecondVertexShader.glsl",
+    //                                 "../src/SecondFragmentShader.glsl");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -165,18 +167,25 @@ void AS_Application::MainLoop()
     //Watch out, can cause flickering
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(shaderPrograms[0]); //Every shader and rendering call after this will use given program
+    AS_Shader firstShader("../src/SimpleVertexShader.glsl",
+                          "../src/SimpleFragmentShader.glsl"),
+              secondShader("../src/SecondVertexShader.glsl",
+                           "../src/SecondFragmentShader.glsl");
 
+    //glUseProgram(shaderPrograms[0]); //Every shader and rendering call after this will use given program
+    firstShader.Use();
     //Any subsequent VBO, EBO, glVertexAttribPointer() and glEnableVertexAttribArray calls will be stored inside the currently bound VAO
     glBindVertexArray(VAOs[0]);
     glDrawArrays(GL_TRIANGLES, 0, 3);
-
-    glUseProgram(shaderPrograms[1]);
+    
+    //glUseProgram(shaderPrograms[1]);
+    secondShader.Use();
     float _timeValue = glfwGetTime();
     float _greenValue = (sin(_timeValue) / 2.0f) + 0.5f;
     // //? Finding uniform location doesn't require to use the shader program but updating its value does.
-    int _vertexColorLocation = glGetUniformLocation(shaderPrograms[1], "vertexColor");
-    glUniform4f(_vertexColorLocation, 0.0f, _greenValue, 0.0f, 1.0f); //Sets uniform value
+    // int _vertexColorLocation = glGetUniformLocation(shaderPrograms[1], "vertexColor");
+    //glUniform4f(_vertexColorLocation, 0.0f, _greenValue, 0.0f, 1.0f); //Sets uniform value
+    secondShader.SetVec4("vertexColor", 0.0f, _greenValue, 0.0f, 1.0f);
     glBindVertexArray(VAOs[1]);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
