@@ -11,8 +11,8 @@ GLuint VAOs[2];
 GLuint VBOs[2];
 // This will identify our element buffer
 GLuint EBOs[1];
-// And this will identify our shader program
-GLuint shaderPrograms[2];
+//// And this will identify our shader program
+//GLuint shaderPrograms[2];
 
 //Called when window size is changed 
 void framebuffer_size_callback(GLFWwindow* _window, int _width, int _height)
@@ -174,6 +174,7 @@ void AS_Application::MainLoop()
 
     //glUseProgram(shaderPrograms[0]); //Every shader and rendering call after this will use given program
     firstShader.Use();
+    firstShader.SetFloat("xOffset", 1.0f);
     //Any subsequent VBO, EBO, glVertexAttribPointer() and glEnableVertexAttribArray calls will be stored inside the currently bound VAO
     glBindVertexArray(VAOs[0]);
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -289,5 +290,5 @@ void AS_Application::DeallocateAllResources()
 {
     glDeleteVertexArrays(2, VAOs);
     glDeleteBuffers(2, VBOs);
-    glDeleteProgramsNV(2, shaderPrograms);
+    //glDeleteProgramsNV(2, shaderPrograms);
 }
