@@ -1,8 +1,24 @@
 #pragma once
-#include <string>
+
+// Include standard headers
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+
+// Include GLEW.
+// Always include it before gl.h and glfw3.h, since it's a bit magic.
+#include <GL/glew.h>
+
+// Include GLFW
+#include <GLFW/glfw3.h>
+
+// Include GLM (3D maths)
+#include <glm/glm.hpp>
+
+#include <common/shader.hpp>
 
 class AS_Application
-{
+{    
 public:
     AS_Application();
     ~AS_Application();
@@ -20,15 +36,6 @@ private:
     int OpenWindow();
 
     int InitGLEW();
-
-    void CreateVAO();
-    //VBO stores vertices in GPU's memory
-    //Sending data to the GPU from the CPU is relatively slow
-    //So wherever we can, send as much data as possible at once
-    void CreateVBO(int _amnt);
-    void CreateEBO();
-
-    void Draw();
-
+    
     void DeallocateAllResources();
 };
