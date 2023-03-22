@@ -58,6 +58,8 @@ add_executable(ArsonS_GL
 	#Add new scripts here
 	src/Scripts/Application/Public/AS_Application.h
 	src/Scripts/Application/Private/AS_Application.cpp
+	src/Scripts/Application/Public/AS_Object.h
+	src/Scripts/Application/Private/AS_Object.cpp
 	
 	common/shader.cpp
 	common/shader.hpp
