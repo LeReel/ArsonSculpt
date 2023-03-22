@@ -69,6 +69,7 @@ add_executable(ArsonS_GL
 	common/objloader.hpp
 
 	src/SimpleVertexShader.glsl
+	src/SecondVertexShader.glsl
 	src/SimpleFragmentShader.glsl
 	src/SecondFragmentShader.glsl
 )
