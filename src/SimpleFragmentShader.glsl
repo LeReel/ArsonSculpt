@@ -7,6 +7,6 @@ out vec4 outColor;
 
 void main() 
 {
-    //outColor = vec4(vertexColor, 1.0f);
-    outColor = positionColor;
+    outColor = vec4(vertexColor, 1.0f);
+    //outColor = positionColor;
 }
