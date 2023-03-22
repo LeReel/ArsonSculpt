@@ -14,6 +14,19 @@ GLuint EBOs[1];
 //// And this will identify our shader program
 //GLuint shaderPrograms[2];
 
+double lastTime = glfwGetTime();
+int nbFrames = 0;
+void PrintFPS()
+{
+    double currentTime = glfwGetTime();
+    nbFrames++;
+    if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
+        // printf and reset timer
+        printf("%f ms/frame\n", 1000.0/double(nbFrames));
+        nbFrames = 0;
+        lastTime += 1.0;
+    }
+}
 //Called when window size is changed 
 void framebuffer_size_callback(GLFWwindow* _window, int _width, int _height)
 {
@@ -152,6 +165,7 @@ int AS_Application::Run()
     // Check if the ESC key was pressed or the window was closed
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0)
     {
+        PrintFPS();
         MainLoop();
     }
 
