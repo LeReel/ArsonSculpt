@@ -38,9 +38,10 @@ int AS_Application::Run()
     //==============================================================================//
     GLfloat triangleVertices1[] = {
         //Triangle1
-        -1.0f, -1.0f, 0.0f,
-        -0.5f, -0.25f, 0.0f,
-        -1.0f, -0.25f, 0.0f,
+        // positions          // colors
+        -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        -0.5f, -0.25f, 0.0f, 0.0f, 1.0f, 0.0f,
+        -1.0f, -0.25f, 0.0f, 0.0f, 0.0f, 1.0f,
     };
     GLfloat triangleVertices2[] = {
         //Triangle2
@@ -66,16 +67,26 @@ int AS_Application::Run()
         triangleVertices1,
         GL_STATIC_DRAW
     );
+    //Position attribute
     glVertexAttribPointer(
         0,
         3,
         GL_FLOAT,
         GL_FALSE,
-        3 * sizeof(float),
+        6 * sizeof(float), //Stride is 6 since we added 3 more float to attribute
         (void*)0);
+    glEnableVertexAttribArray(0);
+    //Color attribute
+    glVertexAttribPointer(
+        1,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        6 * sizeof(float),
+        (void*)(3 * sizeof(float))); //Offset is 3*float 
     //? Each vertex attribute takes its data from memory managed by a VBO.
     //? Which VBO it takes its data from is the one bound to GL_ARRAY_BUFFER when calling glVertexAttribPointer()
-    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
     //2nd triangle's configuration
     glBindVertexArray(VAOs[1]);
@@ -129,13 +140,13 @@ int AS_Application::Run()
 
 
     // Shaders will process this data
-    shaderPrograms[0]= LoadShaders("../src/SimpleVertexShader.glsl",
-                                "../src/SimpleFragmentShader.glsl");
-    shaderPrograms[1]= LoadShaders("../src/SimpleVertexShader.glsl",
-                                "../src/SecondFragmentShader.glsl");
+    shaderPrograms[0] = LoadShaders("../src/SimpleVertexShader.glsl",
+                                    "../src/SimpleFragmentShader.glsl");
+    shaderPrograms[1] = LoadShaders("../src/SecondVertexShader.glsl",
+                                    "../src/SecondFragmentShader.glsl");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    
+
     // Check if the ESC key was pressed or the window was closed
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0)
     {
@@ -145,7 +156,7 @@ int AS_Application::Run()
     DeallocateAllResources();
 
     glfwTerminate();
-    
+
     return 0;
 }
 
@@ -154,14 +165,18 @@ void AS_Application::MainLoop()
     //Watch out, can cause flickering
     glClear(GL_COLOR_BUFFER_BIT);
 
-    //Every shader and rendering call after this will use given program
-    glUseProgram(shaderPrograms[0]);
-    //Any subsequent VBO, EBO, glVertexAttribPointer() and glEnableVertexAttribArray calls
-    //will be stored inside the currently bound VAO
+    glUseProgram(shaderPrograms[0]); //Every shader and rendering call after this will use given program
+
+    //Any subsequent VBO, EBO, glVertexAttribPointer() and glEnableVertexAttribArray calls will be stored inside the currently bound VAO
     glBindVertexArray(VAOs[0]);
     glDrawArrays(GL_TRIANGLES, 0, 3);
-    
+
     glUseProgram(shaderPrograms[1]);
+    float _timeValue = glfwGetTime();
+    float _greenValue = (sin(_timeValue) / 2.0f) + 0.5f;
+    // //? Finding uniform location doesn't require to use the shader program but updating its value does.
+    int _vertexColorLocation = glGetUniformLocation(shaderPrograms[1], "vertexColor");
+    glUniform4f(_vertexColorLocation, 0.0f, _greenValue, 0.0f, 1.0f); //Sets uniform value
     glBindVertexArray(VAOs[1]);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -242,7 +257,7 @@ int AS_Application::OpenWindow()
         glfwTerminate();
         return -1;
     }
-    
+
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     return 0;
@@ -267,4 +282,3 @@ void AS_Application::DeallocateAllResources()
     glDeleteBuffers(2, VBOs);
     glDeleteProgramsNV(2, shaderPrograms);
 }
-
