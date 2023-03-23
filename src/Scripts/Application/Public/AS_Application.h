@@ -14,6 +14,8 @@
 
 // Include GLM (3D maths)
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
+#include <glm/gtc/type_ptr.hpp>
 
 class AS_Application
 {    

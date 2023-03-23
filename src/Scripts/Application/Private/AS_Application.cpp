@@ -6,27 +6,29 @@
 GLFWwindow* window;
 
 // This will identify our vertex array
-GLuint VAOs[2];
+GLuint VAOs[3];
 // This will identify our vertex buffer
-GLuint VBOs[2];
+GLuint VBOs[3];
 // This will identify our element buffer
 GLuint EBOs[1];
-//// And this will identify our shader program
-//GLuint shaderPrograms[2];
 
 double lastTime = glfwGetTime();
 int nbFrames = 0;
+
 void PrintFPS()
 {
     double currentTime = glfwGetTime();
     nbFrames++;
-    if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
+    if (currentTime - lastTime >= 1.0)
+    {
+        // If last prinf() was more than 1 sec ago
         // printf and reset timer
-        printf("%f ms/frame\n", 1000.0/double(nbFrames));
+        printf("%f ms/frame\n", 1000.0 / double(nbFrames));
         nbFrames = 0;
         lastTime += 1.0;
     }
 }
+
 //Called when window size is changed 
 void framebuffer_size_callback(GLFWwindow* _window, int _width, int _height)
 {
@@ -54,9 +56,9 @@ int AS_Application::Run()
     GLfloat triangleVertices1[] = {
         //Triangle1
         // positions          // colors
-        -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-        -0.5f, -0.25f, 0.0f, 0.0f, 1.0f, 0.0f,
-        -1.0f, -0.25f, 0.0f, 0.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+        0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
     };
     GLfloat triangleVertices2[] = {
         //Triangle2
@@ -69,9 +71,9 @@ int AS_Application::Run()
     //? - Calls to glEnable/disableVertexAttribArray
     //? - Attribute configurations via glVertexAttribPointer
     //? - VBO associated with vertex attributes by calls to glVertexAttribPointer()
-    glGenVertexArrays(2, VAOs);
+    glGenVertexArrays(3, VAOs);
     // Generates buffers, puts the resulting identifier in VBOs
-    glGenBuffers(2, VBOs);
+    glGenBuffers(3, VBOs);
 
     //1st triangle's configuration
     glBindVertexArray(VAOs[0]);
@@ -123,44 +125,58 @@ int AS_Application::Run()
     //==============================================================================//
 
     //==============================================================================//
-    // GLfloat rectangleVertices1[] = {
-    //     0.5f, 0.5f, 0.0f, // top right
-    //     0.5f, -0.5f, 0.0f, // bottom right
-    //     -0.5f, -0.5f, 0.0f, // bottom left
-    //     -0.5f, 0.5f, 0.0f // top left 
-    // };
-    //
-    // // Give our vertices to OpenGL (stores user-defined data into GPU memory; those data are managed by the currently bound buffer)
-    // //? GL_STREAM_DRAW:  data is set only once / used at most a few times by the GPU.
-    // //? GL_STATIC_DRAW:  data is set only once / used many times by the GPU.
-    // //? GL_DYNAMIC_DRAW: data is changed a lot / used many times by the GPU.
-    // glBufferData(
-    //     GL_ARRAY_BUFFER, //Type of the buffer we want to copy data into
-    //     sizeof(rectangleVertices1), //Size (in bytes) of the data we want to pass to the buffer
-    //     rectangleVertices1, //Actual data we want to pass
-    //     GL_STATIC_DRAW //How we want the GPU to manage the given data
-    // );
-    // //? Element Buffer Object (EBO) is a buffer that stores indices that GL uses to decide what vertices to draw.
-    // //? This is called Indexed Drawing and avoids repeating vertices that overlap (as we draw mainly in triangles)
-    // GLuint _indices[] = {
-    //     0, 1, 3,
-    //     1, 2, 3
-    // };
-    // glBufferData(
-    //     GL_ELEMENT_ARRAY_BUFFER,
-    //     sizeof(_indices),
-    //     _indices,
-    //     GL_STATIC_DRAW);
+    GLfloat rectangleVertices1[] = {
+        0.5f, 0.5f, 0.0f, // top right
+        0.5f, -0.5f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f, // bottom left
+        -0.5f, 0.5f, 0.0f // top left 
+    };
+    //? Element Buffer Object (EBO) is a buffer that stores indices that GL uses to decide what vertices to draw.
+    //? This is called Indexed Drawing and avoids repeating vertices that overlap (as we draw mainly in triangles)
+    GLuint _indices[] = {
+        0, 1, 3,
+        1, 2, 3
+    };
+
+    // Give our vertices to OpenGL (stores user-defined data into GPU memory; those data are managed by the currently bound buffer)
+    //? GL_STREAM_DRAW:  data is set only once / used at most a few times by the GPU.
+    //? GL_STATIC_DRAW:  data is set only once / used many times by the GPU.
+    //? GL_DYNAMIC_DRAW: data is changed a lot / used many times by the GPU.
+    glGenBuffers(1, &EBOs[0]);
+    glBindVertexArray(VAOs[2]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]);
+    glBufferData(
+        GL_ARRAY_BUFFER, //Type of the buffer we want to copy data into
+        sizeof(rectangleVertices1), //Size (in bytes) of the data we want to pass to the buffer
+        rectangleVertices1, //Actual data we want to pass
+        GL_STATIC_DRAW //How we want the GPU to manage the given data
+    );
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[0]);
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
+        sizeof(_indices),
+        _indices,
+        GL_STATIC_DRAW);
+    glVertexAttribPointer(
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        3*sizeof(float),
+        (void*)0);
+    glEnableVertexAttribArray(0);
     //==============================================================================//
+    
+    //!Do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO;
+    //!Keep the EBO bound.
+    glBindBuffer(GL_ARRAY_BUFFER, 0); 
+    //Modifying other VAOs requires a call to glBindVertexArray
+    //so we generally don't unbind VAOs nor VBOs when it's not directly necessary.
+    glBindVertexArray(0);
 
-
-    // Shaders will process this data
-    // shaderPrograms[0] = LoadShaders("../src/SimpleVertexShader.glsl",
-    //                                 "../src/SimpleFragmentShader.glsl");
-    // shaderPrograms[1] = LoadShaders("../src/SecondVertexShader.glsl",
-    //                                 "../src/SecondFragmentShader.glsl");
-
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // Check if the ESC key was pressed or the window was closed
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0)
@@ -186,24 +202,29 @@ void AS_Application::MainLoop()
               secondShader("../src/SecondVertexShader.glsl",
                            "../src/SecondFragmentShader.glsl");
 
-    //glUseProgram(shaderPrograms[0]); //Every shader and rendering call after this will use given program
-    firstShader.Use();
-    firstShader.SetFloat("xOffset", 1.0f);
-    //Any subsequent VBO, EBO, glVertexAttribPointer() and glEnableVertexAttribArray calls will be stored inside the currently bound VAO
+    firstShader.Use(); //Every shader and rendering call after this will use given program
+    firstShader.SetFloat("xOffset", 0.0f);
+    //Any subsequent VBO, EBO, glVertexAttribPtr and glEnableVertexAttribArray calls will be stored inside the currently bound VAO
     glBindVertexArray(VAOs[0]);
     glDrawArrays(GL_TRIANGLES, 0, 3);
     
-    //glUseProgram(shaderPrograms[1]);
     secondShader.Use();
     float _timeValue = glfwGetTime();
     float _greenValue = (sin(_timeValue) / 2.0f) + 0.5f;
     // //? Finding uniform location doesn't require to use the shader program but updating its value does.
-    // int _vertexColorLocation = glGetUniformLocation(shaderPrograms[1], "vertexColor");
-    //glUniform4f(_vertexColorLocation, 0.0f, _greenValue, 0.0f, 1.0f); //Sets uniform value
     secondShader.SetVec4("vertexColor", 0.0f, _greenValue, 0.0f, 1.0f);
     glBindVertexArray(VAOs[1]);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
+    glBindVertexArray(VAOs[2]);
+    glDrawElements(
+        GL_TRIANGLES, //Draw mode 
+        6, //Number of elements we want to draw (here it's 6 indices)
+        GL_UNSIGNED_INT, //Indices type
+        0 //Offset
+    );
+    glBindVertexArray(NULL);
+    
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
