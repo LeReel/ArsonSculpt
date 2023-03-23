@@ -64,13 +64,6 @@ add_executable(ArsonS_GL
 	
 	src/Scripts/Application/Public/AS_Object.h
 	src/Scripts/Application/Private/AS_Object.cpp
-	
-	common/controls.cpp
-	common/controls.hpp
-	common/texture.cpp
-	common/texture.hpp
-	common/objloader.cpp
-	common/objloader.hpp
 
 	src/SimpleVertexShader.glsl
 	src/SecondVertexShader.glsl
@@ -84,7 +77,6 @@ target_link_libraries(ArsonS_GL
 set_target_properties(ArsonS_GL PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ArsonS_GL/")
 create_target_launcher(ArsonS_GL WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ArsonS_GL/")
 
-SOURCE_GROUP(common REGULAR_EXPRESSION ".*/common/.*")
 SOURCE_GROUP(shaders REGULAR_EXPRESSION ".*/.*shader$")
 
 
