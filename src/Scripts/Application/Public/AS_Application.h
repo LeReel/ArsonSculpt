@@ -15,8 +15,6 @@
 // Include GLM (3D maths)
 #include <glm/glm.hpp>
 
-#include <common/shader.hpp>
-
 class AS_Application
 {    
 public:

@@ -65,8 +65,6 @@ add_executable(ArsonS_GL
 	src/Scripts/Application/Public/AS_Object.h
 	src/Scripts/Application/Private/AS_Object.cpp
 	
-	common/shader.cpp
-	common/shader.hpp
 	common/controls.cpp
 	common/controls.hpp
 	common/texture.cpp
