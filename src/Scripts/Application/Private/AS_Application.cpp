@@ -152,7 +152,7 @@ int AS_Application::Run()
         rectangleVertices1, //Actual data we want to pass
         GL_STATIC_DRAW //How we want the GPU to manage the given data
     );
-    
+
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[0]);
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
@@ -164,14 +164,14 @@ int AS_Application::Run()
         3,
         GL_FLOAT,
         GL_FALSE,
-        3*sizeof(float),
+        3 * sizeof(float),
         (void*)0);
     glEnableVertexAttribArray(0);
     //==============================================================================//
-    
+
     //!Do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO;
     //!Keep the EBO bound.
-    glBindBuffer(GL_ARRAY_BUFFER, 0); 
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     //Modifying other VAOs requires a call to glBindVertexArray
     //so we generally don't unbind VAOs nor VBOs when it's not directly necessary.
     glBindVertexArray(0);
@@ -200,22 +200,53 @@ void AS_Application::MainLoop()
     AS_Shader firstShader("../src/SimpleVertexShader.glsl",
                           "../src/SimpleFragmentShader.glsl"),
               secondShader("../src/SecondVertexShader.glsl",
-                           "../src/SecondFragmentShader.glsl");
+                           "../src/SecondFragmentShader.glsl"),
+              thirdShader("../src/SecondVertexShader.glsl",
+                          "../src/SecondFragmentShader.glsl");
 
     firstShader.Use(); //Every shader and rendering call after this will use given program
     firstShader.SetFloat("xOffset", 0.0f);
     //Any subsequent VBO, EBO, glVertexAttribPtr and glEnableVertexAttribArray calls will be stored inside the currently bound VAO
     glBindVertexArray(VAOs[0]);
     glDrawArrays(GL_TRIANGLES, 0, 3);
-    
-    secondShader.Use();
+
     float _timeValue = glfwGetTime();
     float _greenValue = (sin(_timeValue) / 2.0f) + 0.5f;
     // //? Finding uniform location doesn't require to use the shader program but updating its value does.
+    secondShader.Use();
     secondShader.SetVec4("vertexColor", 0.0f, _greenValue, 0.0f, 1.0f);
+
+    //Initialize identity matrix
+    glm::mat4 _trans = glm::mat4(1.0f);
+
+    _trans = glm::scale(_trans, glm::vec3(0.5, 0.5, 0.5));
+    //Rotate on z-axis
+    _trans = glm::rotate(_trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
+    //Create a transfo matrix with identity matrix + a translation vector
+    _trans = glm::translate(_trans, glm::vec3(1.0f, 1.0f, 0.0f));
+    secondShader.SetMat4fv("transform", 1, GL_FALSE, glm::value_ptr(_trans));
+
     glBindVertexArray(VAOs[1]);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
+    thirdShader.Use();
+    thirdShader.SetVec4("vertexColor", _greenValue, 0.0f, 0.0f, 1.0f);
+    //Rotate on z-axis
+    _trans = glm::rotate(_trans, (float)glfwGetTime() * 4, glm::vec3(0.0, 0.0, -1.0));
+    thirdShader.SetMat4fv("transform", 1, GL_FALSE, glm::value_ptr(_trans));
+    glBindVertexArray(VAOs[2]);
+    glDrawElements(
+        GL_TRIANGLES, //Draw mode 
+        6, //Number of elements we want to draw (here it's 6 indices)
+        GL_UNSIGNED_INT, //Indices type
+        0 //Offset
+    );
+
+    glm::mat4 _trans2 = glm::mat4(1.0f);
+    _trans2 = glm::translate(_trans2, glm::vec3(-0.5, 0.5, 0.0));
+    _trans2 = glm::scale(_trans2, glm::vec3((glm::sin((float)glfwGetTime()))));
+    thirdShader.SetMat4fv("transform", 1, GL_FALSE, glm::value_ptr(_trans2));
+    thirdShader.SetVec4("vertexColor", 0.0f, 0.0f, _greenValue, 1.0f);
     glBindVertexArray(VAOs[2]);
     glDrawElements(
         GL_TRIANGLES, //Draw mode 
@@ -224,7 +255,7 @@ void AS_Application::MainLoop()
         0 //Offset
     );
     glBindVertexArray(NULL);
-    
+
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
@@ -238,7 +269,7 @@ int AS_Application::Init()
 
     // Ensure we can capture the escape key being pressed below
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-    glClearColor(1, .6f, 0, 1);
+    glClearColor(0.3, 0.3, 0.3, 1);
 
     return 0;
 }

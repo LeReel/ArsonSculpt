@@ -104,3 +104,8 @@ void AS_Shader::SetVec4(const std::string& _name, float _x, float _y, float _z, 
 {
     glUniform4f(glGetUniformLocation(ProgramID, _name.c_str()), _x, _y, _z, _w);
 }
+
+void AS_Shader::SetMat4fv(const std::string& _name, GLsizei _count, GLboolean _isTranspose, const GLfloat* _value)
+{
+    glUniformMatrix4fv(glGetUniformLocation(ProgramID, _name.c_str()), _count, _isTranspose, _value);
+}
