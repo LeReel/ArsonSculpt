@@ -6,9 +6,9 @@
 GLFWwindow* window;
 
 // This will identify our vertex array
-GLuint VAOs[3];
+GLuint VAOs[2];
 // This will identify our vertex buffer
-GLuint VBOs[3];
+GLuint VBOs[2];
 // This will identify our element buffer
 GLuint EBOs[1];
 
@@ -53,35 +53,67 @@ int AS_Application::Run()
     }
 
     //==============================================================================//
-    GLfloat triangleVertices1[] = {
-        //Triangle1
-        // positions          // colors
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-        0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-    };
-    GLfloat triangleVertices2[] = {
-        //Triangle2
-        0.25f, 0.25f, 0.0f,
-        0.5f, 1.0f, 0.0f,
-        0.75f, 0.25f, 0.0f,
+    // GLfloat triangleVertices1[] = {
+    //     //Triangle1
+    //     // positions          // colors
+    //     -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+    //     0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+    //     0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+    // };
+    GLfloat cubeVertices[] = {
+        -0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, 0.5f, -0.5f,
+        0.5f, 0.5f, -0.5f,
+        -0.5f, 0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+        -0.5f, -0.5f, 0.5f,
+        0.5f, -0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
+        -0.5f, 0.5f, 0.5f,
+        -0.5f, -0.5f, 0.5f,
+        -0.5f, 0.5f, 0.5f,
+        -0.5f, 0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+        -0.5f, -0.5f, 0.5f,
+        -0.5f, 0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
+        0.5f, 0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
+        -0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, 0.5f,
+        0.5f, -0.5f, 0.5f,
+        -0.5f, -0.5f, 0.5f,
+        -0.5f, -0.5f, -0.5f,
+        -0.5f, 0.5f, -0.5f,
+        0.5f, 0.5f, -0.5f,
+        0.5f, 0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
+        -0.5f, 0.5f, 0.5f,
+        -0.5f, 0.5f, -0.5f,
     };
 
     //? Create a VertexArrayObject that stores:
     //? - Calls to glEnable/disableVertexAttribArray
     //? - Attribute configurations via glVertexAttribPointer
     //? - VBO associated with vertex attributes by calls to glVertexAttribPointer()
-    glGenVertexArrays(3, VAOs);
+    glGenVertexArrays(2, VAOs);
     // Generates buffers, puts the resulting identifier in VBOs
-    glGenBuffers(3, VBOs);
+    glGenBuffers(2, VBOs);
 
     //1st triangle's configuration
     glBindVertexArray(VAOs[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
     glBufferData(
         GL_ARRAY_BUFFER,
-        sizeof(triangleVertices1),
-        triangleVertices1,
+        sizeof(cubeVertices),
+        cubeVertices,
         GL_STATIC_DRAW
     );
     //Position attribute
@@ -90,38 +122,11 @@ int AS_Application::Run()
         3,
         GL_FLOAT,
         GL_FALSE,
-        6 * sizeof(float), //Stride is 6 since we added 3 more float to attribute
-        (void*)0);
-    glEnableVertexAttribArray(0);
-    //Color attribute
-    glVertexAttribPointer(
-        1,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        6 * sizeof(float),
-        (void*)(3 * sizeof(float))); //Offset is 3*float 
-    //? Each vertex attribute takes its data from memory managed by a VBO.
-    //? Which VBO it takes its data from is the one bound to GL_ARRAY_BUFFER when calling glVertexAttribPointer()
-    glEnableVertexAttribArray(1);
-
-    //2nd triangle's configuration
-    glBindVertexArray(VAOs[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        sizeof(triangleVertices2),
-        triangleVertices2,
-        GL_STATIC_DRAW
-    );
-    glVertexAttribPointer(
-        0,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
         3 * sizeof(float),
         (void*)0);
     glEnableVertexAttribArray(0);
+    //? Each vertex attribute takes its data from memory managed by a VBO.
+    //? Which VBO it takes its data from is the one bound to GL_ARRAY_BUFFER when calling glVertexAttribPointer()
     //==============================================================================//
 
     //==============================================================================//
@@ -143,9 +148,8 @@ int AS_Application::Run()
     //? GL_STATIC_DRAW:  data is set only once / used many times by the GPU.
     //? GL_DYNAMIC_DRAW: data is changed a lot / used many times by the GPU.
     glGenBuffers(1, &EBOs[0]);
-    glBindVertexArray(VAOs[2]);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]);
+    glBindVertexArray(VAOs[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
     glBufferData(
         GL_ARRAY_BUFFER, //Type of the buffer we want to copy data into
         sizeof(rectangleVertices1), //Size (in bytes) of the data we want to pass to the buffer
@@ -176,8 +180,6 @@ int AS_Application::Run()
     //so we generally don't unbind VAOs nor VBOs when it's not directly necessary.
     glBindVertexArray(0);
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
     // Check if the ESC key was pressed or the window was closed
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0)
     {
@@ -192,68 +194,83 @@ int AS_Application::Run()
     return 0;
 }
 
+glm::vec3 cubePositions[] = {
+    glm::vec3( 0.0f,  0.0f,  0.0f), 
+    glm::vec3( 2.0f,  5.0f, -15.0f), 
+    glm::vec3(-1.5f, -2.2f, -2.5f),  
+    glm::vec3(-3.8f, -2.0f, -12.3f),  
+    glm::vec3( 2.4f, -0.4f, -3.5f),  
+    glm::vec3(-1.7f,  3.0f, -7.5f),  
+    glm::vec3( 1.3f, -2.0f, -2.5f),  
+    glm::vec3( 1.5f,  2.0f, -2.5f), 
+    glm::vec3( 1.5f,  0.2f, -1.5f), 
+    glm::vec3(-1.3f,  1.0f, -1.5f)  
+};
+
 void AS_Application::MainLoop()
 {
     //Watch out, can cause flickering
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     AS_Shader firstShader("../src/SimpleVertexShader.glsl",
                           "../src/SimpleFragmentShader.glsl"),
               secondShader("../src/SecondVertexShader.glsl",
-                           "../src/SecondFragmentShader.glsl"),
-              thirdShader("../src/SecondVertexShader.glsl",
-                          "../src/SecondFragmentShader.glsl");
+                           "../src/SecondFragmentShader.glsl");
 
-    firstShader.Use(); //Every shader and rendering call after this will use given program
-    firstShader.SetFloat("xOffset", 0.0f);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    
     //Any subsequent VBO, EBO, glVertexAttribPtr and glEnableVertexAttribArray calls will be stored inside the currently bound VAO
     glBindVertexArray(VAOs[0]);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    for (int i = 0; i < 10; ++i)
+    {
+        //? Model matrix consists of translations, scaling and/or rotations
+        //? to apply to transform all object's vertices to the global world space.
+        //! scaling -> rotations -> translations
+        glm::mat4 _model = glm::mat4(1.0f);
+        _model = glm::scale(_model, glm::vec3((glm::sin((float)glfwGetTime()))));
+        
+        float _angle = 20.0f * i; 
+        //Multiplying the vertex coords with this model matrix transforms the vertex coords to world coords
+        _model = glm::rotate(_model, (float)glfwGetTime() * glm::radians(_angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        
+        _model = glm::translate(_model, cubePositions[i]);
 
-    float _timeValue = glfwGetTime();
-    float _greenValue = (sin(_timeValue) / 2.0f) + 0.5f;
-    // //? Finding uniform location doesn't require to use the shader program but updating its value does.
+        
+        glm::mat4 _view = glm::mat4(1.0f);
+        //Moves the entire scene around inversed to where we want the camera to move
+        _view = glm::translate(_view, glm::vec3(0.0f, 0.0f, -10.0f));
+
+        glm::mat4 _projection = glm::mat4(1.0f);
+        _projection = glm::perspective(glm::radians(110.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+        firstShader.Use(); //Every shader and rendering call after this will use given program
+        //? Finding uniform location doesn't require to use the shader program but updating its value does.
+        firstShader.SetMat4fv("model", glm::value_ptr(_model));
+        firstShader.SetMat4fv("view", glm::value_ptr(_view));
+        firstShader.SetMat4fv("projection", glm::value_ptr(_projection));
+        
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~Spinning rectangle~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     secondShader.Use();
-    secondShader.SetVec4("vertexColor", 0.0f, _greenValue, 0.0f, 1.0f);
-
+    
     //Initialize identity matrix
     glm::mat4 _trans = glm::mat4(1.0f);
-
-    _trans = glm::scale(_trans, glm::vec3(0.5, 0.5, 0.5));
-    //Rotate on z-axis
     _trans = glm::rotate(_trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
-    //Create a transfo matrix with identity matrix + a translation vector
-    _trans = glm::translate(_trans, glm::vec3(1.0f, 1.0f, 0.0f));
-    secondShader.SetMat4fv("transform", 1, GL_FALSE, glm::value_ptr(_trans));
 
+    secondShader.SetMat4fv("transform", glm::value_ptr(_trans));
+    
     glBindVertexArray(VAOs[1]);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-
-    thirdShader.Use();
-    thirdShader.SetVec4("vertexColor", _greenValue, 0.0f, 0.0f, 1.0f);
-    //Rotate on z-axis
-    _trans = glm::rotate(_trans, (float)glfwGetTime() * 4, glm::vec3(0.0, 0.0, -1.0));
-    thirdShader.SetMat4fv("transform", 1, GL_FALSE, glm::value_ptr(_trans));
-    glBindVertexArray(VAOs[2]);
     glDrawElements(
         GL_TRIANGLES, //Draw mode 
         6, //Number of elements we want to draw (here it's 6 indices)
         GL_UNSIGNED_INT, //Indices type
         0 //Offset
     );
-
-    glm::mat4 _trans2 = glm::mat4(1.0f);
-    _trans2 = glm::translate(_trans2, glm::vec3(-0.5, 0.5, 0.0));
-    _trans2 = glm::scale(_trans2, glm::vec3((glm::sin((float)glfwGetTime()))));
-    thirdShader.SetMat4fv("transform", 1, GL_FALSE, glm::value_ptr(_trans2));
-    thirdShader.SetVec4("vertexColor", 0.0f, 0.0f, _greenValue, 1.0f);
-    glBindVertexArray(VAOs[2]);
-    glDrawElements(
-        GL_TRIANGLES, //Draw mode 
-        6, //Number of elements we want to draw (here it's 6 indices)
-        GL_UNSIGNED_INT, //Indices type
-        0 //Offset
-    );
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    
     glBindVertexArray(NULL);
 
     glfwSwapBuffers(window);
@@ -270,6 +287,7 @@ int AS_Application::Init()
     // Ensure we can capture the escape key being pressed below
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glClearColor(0.3, 0.3, 0.3, 1);
+    glEnable(GL_DEPTH_TEST);
 
     return 0;
 }

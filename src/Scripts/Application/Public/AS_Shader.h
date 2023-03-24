@@ -27,7 +27,7 @@ public:
     void SetInt(const std::string& _name, int _value) const;
     void SetFloat(const std::string& _name, float _value) const;
     void SetVec4(const std::string& _name, float _x, float _y, float _z, float _w);
-    void SetMat4fv(const std::string& _name, GLsizei _count, GLboolean _isTranspose, const GLfloat* _value);
+    void SetMat4fv(const std::string& _name, const GLfloat* _value);
 };
 
 #endif
