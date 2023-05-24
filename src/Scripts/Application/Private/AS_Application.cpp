@@ -52,47 +52,47 @@ int AS_Application::Run()
         return -1;
     }
 
-    //==============================================================================//
-    // GLfloat triangleVertices1[] = {
-    //     //Triangle1
-    //     // positions          // colors
-    //     -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-    //     0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-    //     0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-    // };
     GLfloat cubeVertices[] = {
         -0.5f, -0.5f, -0.5f,
         0.5f, -0.5f, -0.5f,
         0.5f, 0.5f, -0.5f,
         0.5f, 0.5f, -0.5f,
+        
         -0.5f, 0.5f, -0.5f,
         -0.5f, -0.5f, -0.5f,
         -0.5f, -0.5f, 0.5f,
         0.5f, -0.5f, 0.5f,
+        
         0.5f, 0.5f, 0.5f,
         0.5f, 0.5f, 0.5f,
         -0.5f, 0.5f, 0.5f,
         -0.5f, -0.5f, 0.5f,
+        
         -0.5f, 0.5f, 0.5f,
         -0.5f, 0.5f, -0.5f,
         -0.5f, -0.5f, -0.5f,
         -0.5f, -0.5f, -0.5f,
+        
         -0.5f, -0.5f, 0.5f,
         -0.5f, 0.5f, 0.5f,
         0.5f, 0.5f, 0.5f,
         0.5f, 0.5f, -0.5f,
+        
         0.5f, -0.5f, -0.5f,
         0.5f, -0.5f, -0.5f,
         0.5f, -0.5f, 0.5f,
         0.5f, 0.5f, 0.5f,
+        
         -0.5f, -0.5f, -0.5f,
         0.5f, -0.5f, -0.5f,
         0.5f, -0.5f, 0.5f,
         0.5f, -0.5f, 0.5f,
+        
         -0.5f, -0.5f, 0.5f,
         -0.5f, -0.5f, -0.5f,
         -0.5f, 0.5f, -0.5f,
         0.5f, 0.5f, -0.5f,
+        
         0.5f, 0.5f, 0.5f,
         0.5f, 0.5f, 0.5f,
         -0.5f, 0.5f, 0.5f,
@@ -103,9 +103,9 @@ int AS_Application::Run()
     //? - Calls to glEnable/disableVertexAttribArray
     //? - Attribute configurations via glVertexAttribPointer
     //? - VBO associated with vertex attributes by calls to glVertexAttribPointer()
-    glGenVertexArrays(2, VAOs);
+    glGenVertexArrays(1, VAOs);
     // Generates buffers, puts the resulting identifier in VBOs
-    glGenBuffers(2, VBOs);
+    glGenBuffers(1, VBOs);
 
     //1st triangle's configuration
     glBindVertexArray(VAOs[0]);
@@ -130,12 +130,6 @@ int AS_Application::Run()
     //==============================================================================//
 
     //==============================================================================//
-    GLfloat rectangleVertices1[] = {
-        0.5f, 0.5f, 0.0f, // top right
-        0.5f, -0.5f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f, // bottom left
-        -0.5f, 0.5f, 0.0f // top left 
-    };
     //? Element Buffer Object (EBO) is a buffer that stores indices that GL uses to decide what vertices to draw.
     //? This is called Indexed Drawing and avoids repeating vertices that overlap (as we draw mainly in triangles)
     GLuint _indices[] = {
@@ -148,14 +142,6 @@ int AS_Application::Run()
     //? GL_STATIC_DRAW:  data is set only once / used many times by the GPU.
     //? GL_DYNAMIC_DRAW: data is changed a lot / used many times by the GPU.
     glGenBuffers(1, &EBOs[0]);
-    glBindVertexArray(VAOs[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-    glBufferData(
-        GL_ARRAY_BUFFER, //Type of the buffer we want to copy data into
-        sizeof(rectangleVertices1), //Size (in bytes) of the data we want to pass to the buffer
-        rectangleVertices1, //Actual data we want to pass
-        GL_STATIC_DRAW //How we want the GPU to manage the given data
-    );
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[0]);
     glBufferData(
@@ -195,82 +181,62 @@ int AS_Application::Run()
 }
 
 glm::vec3 cubePositions[] = {
-    glm::vec3( 0.0f,  0.0f,  0.0f), 
-    glm::vec3( 2.0f,  5.0f, -15.0f), 
-    glm::vec3(-1.5f, -2.2f, -2.5f),  
-    glm::vec3(-3.8f, -2.0f, -12.3f),  
-    glm::vec3( 2.4f, -0.4f, -3.5f),  
-    glm::vec3(-1.7f,  3.0f, -7.5f),  
-    glm::vec3( 1.3f, -2.0f, -2.5f),  
-    glm::vec3( 1.5f,  2.0f, -2.5f), 
-    glm::vec3( 1.5f,  0.2f, -1.5f), 
-    glm::vec3(-1.3f,  1.0f, -1.5f)  
+    glm::vec3(0.0f, 0.0f, 0.0f),
+    glm::vec3(2.0f, 5.0f, -15.0f),
+    glm::vec3(-1.5f, -2.2f, -2.5f),
+    glm::vec3(-3.8f, -2.0f, -12.3f),
+    glm::vec3(2.4f, -0.4f, -3.5f),
+    glm::vec3(-1.7f, 3.0f, -7.5f),
+    glm::vec3(1.3f, -2.0f, -2.5f),
+    glm::vec3(1.5f, 2.0f, -2.5f),
+    glm::vec3(1.5f, 0.2f, -1.5f),
+    glm::vec3(-1.3f, 1.0f, -1.5f)
 };
+
+void DrawObject(int _index, glm::vec3 _position, AS_Shader _shader)
+{
+    //! scaling -> rotations -> translations
+    glm::mat4 _model = glm::mat4(1.0f);
+    _model = glm::scale(_model, glm::vec3((glm::sin((float)glfwGetTime()))));
+
+    float _angle = 20.0f * _index;
+    //Multiplying the vertex coords with this model matrix transforms the vertex coords to world coords
+    _model = glm::rotate(_model, (float)glfwGetTime() * glm::radians(_angle), glm::vec3(1.0f, 0.3f, 0.5f));
+
+    _model = glm::translate(_model, _position);
+
+    glm::mat4 _view = glm::mat4(1.0f);
+    //Moves the entire scene around inversed to where we want the camera to move
+    _view = glm::translate(_view, glm::vec3(0.0f, 0.0f, -10.0f));
+
+    glm::mat4 _projection = glm::mat4(1.0f);
+    _projection = glm::perspective(glm::radians(110.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+    _shader.Use(); //Every shader and rendering call after this will use given program
+    //? Finding uniform location doesn't require to use the shader program but updating its value does.
+    _shader.SetMat4fv("model", glm::value_ptr(_model));
+    _shader.SetMat4fv("view", glm::value_ptr(_view));
+    _shader.SetMat4fv("projection", glm::value_ptr(_projection));
+
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+}
 
 void AS_Application::MainLoop()
 {
-    //Watch out, can cause flickering
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     AS_Shader firstShader("../src/SimpleVertexShader.glsl",
-                          "../src/SimpleFragmentShader.glsl"),
-              secondShader("../src/SecondVertexShader.glsl",
-                           "../src/SecondFragmentShader.glsl");
+                          "../src/SimpleFragmentShader.glsl");
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    
+
     //Any subsequent VBO, EBO, glVertexAttribPtr and glEnableVertexAttribArray calls will be stored inside the currently bound VAO
     glBindVertexArray(VAOs[0]);
     for (int i = 0; i < 10; ++i)
     {
-        //? Model matrix consists of translations, scaling and/or rotations
-        //? to apply to transform all object's vertices to the global world space.
-        //! scaling -> rotations -> translations
-        glm::mat4 _model = glm::mat4(1.0f);
-        _model = glm::scale(_model, glm::vec3((glm::sin((float)glfwGetTime()))));
-        
-        float _angle = 20.0f * i; 
-        //Multiplying the vertex coords with this model matrix transforms the vertex coords to world coords
-        _model = glm::rotate(_model, (float)glfwGetTime() * glm::radians(_angle), glm::vec3(1.0f, 0.3f, 0.5f));
-        
-        _model = glm::translate(_model, cubePositions[i]);
-
-        
-        glm::mat4 _view = glm::mat4(1.0f);
-        //Moves the entire scene around inversed to where we want the camera to move
-        _view = glm::translate(_view, glm::vec3(0.0f, 0.0f, -10.0f));
-
-        glm::mat4 _projection = glm::mat4(1.0f);
-        _projection = glm::perspective(glm::radians(110.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-
-        firstShader.Use(); //Every shader and rendering call after this will use given program
-        //? Finding uniform location doesn't require to use the shader program but updating its value does.
-        firstShader.SetMat4fv("model", glm::value_ptr(_model));
-        firstShader.SetMat4fv("view", glm::value_ptr(_view));
-        firstShader.SetMat4fv("projection", glm::value_ptr(_projection));
-        
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        DrawObject(i, cubePositions[i], firstShader);
     }
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~Spinning rectangle~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    secondShader.Use();
-    
-    //Initialize identity matrix
-    glm::mat4 _trans = glm::mat4(1.0f);
-    _trans = glm::rotate(_trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
-
-    secondShader.SetMat4fv("transform", glm::value_ptr(_trans));
-    
-    glBindVertexArray(VAOs[1]);
-    glDrawElements(
-        GL_TRIANGLES, //Draw mode 
-        6, //Number of elements we want to draw (here it's 6 indices)
-        GL_UNSIGNED_INT, //Indices type
-        0 //Offset
-    );
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-    
     glBindVertexArray(NULL);
 
     glfwSwapBuffers(window);

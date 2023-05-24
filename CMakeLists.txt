@@ -66,9 +66,7 @@ add_executable(ArsonS_GL
 	src/Scripts/Application/Private/AS_Object.cpp
 
 	src/SimpleVertexShader.glsl
-	src/SecondVertexShader.glsl
 	src/SimpleFragmentShader.glsl
-	src/SecondFragmentShader.glsl
 )
 target_link_libraries(ArsonS_GL
 	${ALL_LIBS}
