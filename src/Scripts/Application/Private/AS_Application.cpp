@@ -12,23 +12,6 @@ GLuint VBOs[2];
 // This will identify our element buffer
 GLuint EBOs[1];
 
-double lastTime = glfwGetTime();
-int nbFrames = 0;
-
-void PrintFPS()
-{
-    double currentTime = glfwGetTime();
-    nbFrames++;
-    if (currentTime - lastTime >= 1.0)
-    {
-        // If last prinf() was more than 1 sec ago
-        // printf and reset timer
-        printf("%f ms/frame\n", 1000.0 / double(nbFrames));
-        nbFrames = 0;
-        lastTime += 1.0;
-    }
-}
-
 //Called when window size is changed 
 void framebuffer_size_callback(GLFWwindow* _window, int _width, int _height)
 {
@@ -57,42 +40,42 @@ int AS_Application::Run()
         0.5f, -0.5f, -0.5f,
         0.5f, 0.5f, -0.5f,
         0.5f, 0.5f, -0.5f,
-        
+
         -0.5f, 0.5f, -0.5f,
         -0.5f, -0.5f, -0.5f,
         -0.5f, -0.5f, 0.5f,
         0.5f, -0.5f, 0.5f,
-        
+
         0.5f, 0.5f, 0.5f,
         0.5f, 0.5f, 0.5f,
         -0.5f, 0.5f, 0.5f,
         -0.5f, -0.5f, 0.5f,
-        
+
         -0.5f, 0.5f, 0.5f,
         -0.5f, 0.5f, -0.5f,
         -0.5f, -0.5f, -0.5f,
         -0.5f, -0.5f, -0.5f,
-        
+
         -0.5f, -0.5f, 0.5f,
         -0.5f, 0.5f, 0.5f,
         0.5f, 0.5f, 0.5f,
         0.5f, 0.5f, -0.5f,
-        
+
         0.5f, -0.5f, -0.5f,
         0.5f, -0.5f, -0.5f,
         0.5f, -0.5f, 0.5f,
         0.5f, 0.5f, 0.5f,
-        
+
         -0.5f, -0.5f, -0.5f,
         0.5f, -0.5f, -0.5f,
         0.5f, -0.5f, 0.5f,
         0.5f, -0.5f, 0.5f,
-        
+
         -0.5f, -0.5f, 0.5f,
         -0.5f, -0.5f, -0.5f,
         -0.5f, 0.5f, -0.5f,
         0.5f, 0.5f, -0.5f,
-        
+
         0.5f, 0.5f, 0.5f,
         0.5f, 0.5f, 0.5f,
         -0.5f, 0.5f, 0.5f,
@@ -167,9 +150,14 @@ int AS_Application::Run()
     glBindVertexArray(0);
 
     // Check if the ESC key was pressed or the window was closed
-    while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0)
+    while (!glfwWindowShouldClose(window))
     {
-        PrintFPS();
+        float currentFrame = static_cast<float>(glfwGetTime());
+        m_deltaTime = currentFrame - m_lastFrame;
+        m_lastFrame = currentFrame;
+
+        ProcessInput(window);
+
         MainLoop();
     }
 
@@ -178,6 +166,22 @@ int AS_Application::Run()
     glfwTerminate();
 
     return 0;
+}
+
+void AS_Application::ProcessInput(GLFWwindow* _window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+
+    float cameraSpeed = static_cast<float>(5 * m_deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+        m_cameraPos += cameraSpeed * m_cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        m_cameraPos -= cameraSpeed * m_cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        m_cameraPos -= glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        m_cameraPos += glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * cameraSpeed;
 }
 
 glm::vec3 cubePositions[] = {
@@ -193,22 +197,17 @@ glm::vec3 cubePositions[] = {
     glm::vec3(-1.3f, 1.0f, -1.5f)
 };
 
-void DrawObject(int _index, glm::vec3 _position, AS_Shader _shader)
+void DrawObject(int _index, glm::mat4 _view, glm::vec3 _position, AS_Shader _shader)
 {
     //! scaling -> rotations -> translations
     glm::mat4 _model = glm::mat4(1.0f);
-    _model = glm::scale(_model, glm::vec3((glm::sin((float)glfwGetTime()))));
-
-    float _angle = 20.0f * _index;
-    //Multiplying the vertex coords with this model matrix transforms the vertex coords to world coords
+    //General rendering
+    const float _angle = 20.0f * _index;
+    _model = glm::scale(_model, glm::vec3(glm::sin((float)glfwGetTime()) + 3));
     _model = glm::rotate(_model, (float)glfwGetTime() * glm::radians(_angle), glm::vec3(1.0f, 0.3f, 0.5f));
-
     _model = glm::translate(_model, _position);
 
-    glm::mat4 _view = glm::mat4(1.0f);
-    //Moves the entire scene around inversed to where we want the camera to move
-    _view = glm::translate(_view, glm::vec3(0.0f, 0.0f, -10.0f));
-
+    //Perspective
     glm::mat4 _projection = glm::mat4(1.0f);
     _projection = glm::perspective(glm::radians(110.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
@@ -228,13 +227,19 @@ void AS_Application::MainLoop()
     AS_Shader firstShader("../src/SimpleVertexShader.glsl",
                           "../src/SimpleFragmentShader.glsl");
 
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Camera definition~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    glm::mat4 _view = glm::lookAt(m_cameraPos,
+                                  m_cameraPos + m_cameraFront,
+                                  m_cameraUp);
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     //Any subsequent VBO, EBO, glVertexAttribPtr and glEnableVertexAttribArray calls will be stored inside the currently bound VAO
     glBindVertexArray(VAOs[0]);
     for (int i = 0; i < 10; ++i)
     {
-        DrawObject(i, cubePositions[i], firstShader);
+        DrawObject(i, _view, cubePositions[i], firstShader);
     }
 
     glBindVertexArray(NULL);
