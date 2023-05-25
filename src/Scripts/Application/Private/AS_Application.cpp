@@ -1,9 +1,21 @@
 #include "AS_Application.h"
 
 #include "AS_Shader.h"
+#include "AS_Camera.h"
 
 //Declare window as global otherwise create an unresolved ext. error
 GLFWwindow* window;
+
+const unsigned int SCR_WIDTH = 1024;
+const unsigned int SCR_HEIGHT = 768;
+
+float lastFrame = 0.0f;
+float deltaTime = 0.0f;
+
+Camera camera(glm::vec3(0.0f, 0.0f, 25.0f));
+float lastX = SCR_WIDTH / 2.0f;
+float lastY = SCR_HEIGHT / 2.0f;
+bool firstMouse = true;
 
 // This will identify our vertex array
 GLuint VAOs[2];
@@ -11,6 +23,14 @@ GLuint VAOs[2];
 GLuint VBOs[2];
 // This will identify our element buffer
 GLuint EBOs[1];
+
+AS_Application::AS_Application()
+{
+}
+
+AS_Application::~AS_Application()
+{
+}
 
 //Called when window size is changed 
 void framebuffer_size_callback(GLFWwindow* _window, int _width, int _height)
@@ -20,12 +40,48 @@ void framebuffer_size_callback(GLFWwindow* _window, int _width, int _height)
     glViewport(0, 0, _width, _height);
 }
 
-AS_Application::AS_Application()
+//Listens to mouse-movement events
+void mouse_callback(GLFWwindow* _window, double _xPos, double _yPos)
 {
+    float xpos = static_cast<float>(_xPos);
+    float ypos = static_cast<float>(_yPos);
+
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+    lastX = xpos;
+    lastY = ypos;
+
+    camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
-AS_Application::~AS_Application()
+//Listens to mouse-scroll events
+void scroll_callback(GLFWwindow* _window, double _xOffset, double _yOffset)
 {
+    camera.ProcessMouseScroll(static_cast<float>(_yOffset));
+}
+
+void AS_Application::ProcessInput(GLFWwindow* _window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+
+    float cameraSpeed = static_cast<float>(5 * deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+        camera.ProcessKeyboard(FORWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.ProcessKeyboard(BACKWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        camera.ProcessKeyboard(LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
 int AS_Application::Run()
@@ -153,8 +209,8 @@ int AS_Application::Run()
     while (!glfwWindowShouldClose(window))
     {
         float currentFrame = static_cast<float>(glfwGetTime());
-        m_deltaTime = currentFrame - m_lastFrame;
-        m_lastFrame = currentFrame;
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
 
         ProcessInput(window);
 
@@ -166,22 +222,6 @@ int AS_Application::Run()
     glfwTerminate();
 
     return 0;
-}
-
-void AS_Application::ProcessInput(GLFWwindow* _window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-
-    float cameraSpeed = static_cast<float>(5 * m_deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-        m_cameraPos += cameraSpeed * m_cameraFront;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        m_cameraPos -= cameraSpeed * m_cameraFront;
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-        m_cameraPos -= glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * cameraSpeed;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        m_cameraPos += glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * cameraSpeed;
 }
 
 glm::vec3 cubePositions[] = {
@@ -200,16 +240,17 @@ glm::vec3 cubePositions[] = {
 void DrawObject(int _index, glm::mat4 _view, glm::vec3 _position, AS_Shader _shader)
 {
     //! scaling -> rotations -> translations
-    glm::mat4 _model = glm::mat4(1.0f);
+
     //General rendering
+    glm::mat4 _model = glm::mat4(1.0f);
     const float _angle = 20.0f * _index;
-    _model = glm::scale(_model, glm::vec3(glm::sin((float)glfwGetTime()) + 3));
-    _model = glm::rotate(_model, (float)glfwGetTime() * glm::radians(_angle), glm::vec3(1.0f, 0.3f, 0.5f));
+
+    _model = glm::rotate(_model, glm::radians(_angle), glm::vec3(1.0f, 0.3f, 0.5f));
     _model = glm::translate(_model, _position);
 
     //Perspective
     glm::mat4 _projection = glm::mat4(1.0f);
-    _projection = glm::perspective(glm::radians(110.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    _projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
     _shader.Use(); //Every shader and rendering call after this will use given program
     //? Finding uniform location doesn't require to use the shader program but updating its value does.
@@ -227,11 +268,7 @@ void AS_Application::MainLoop()
     AS_Shader firstShader("../src/SimpleVertexShader.glsl",
                           "../src/SimpleFragmentShader.glsl");
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Camera definition~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-    glm::mat4 _view = glm::lookAt(m_cameraPos,
-                                  m_cameraPos + m_cameraFront,
-                                  m_cameraUp);
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    glm::mat4 _view = camera.GetViewMatrix();
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -257,6 +294,9 @@ int AS_Application::Init()
 
     // Ensure we can capture the escape key being pressed below
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+    //Hides the cursor and captures it
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     glClearColor(0.3, 0.3, 0.3, 1);
     glEnable(GL_DEPTH_TEST);
 
@@ -312,7 +352,7 @@ void AS_Application::SetWindowHints()
 
 int AS_Application::OpenWindow()
 {
-    window = glfwCreateWindow(1024, 768, "Arson Sculpt", NULL, NULL);
+    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Arson Sculpt", NULL, NULL);
     if (window == NULL)
     {
         fprintf(
@@ -324,7 +364,11 @@ int AS_Application::OpenWindow()
     }
 
     glfwMakeContextCurrent(window);
+
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+
     return 0;
 }
 
