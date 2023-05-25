@@ -1,15 +1,26 @@
 ﻿#include "AS_Camera.h"
 
-AS_Camera::AS_Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+AS_Camera::AS_Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
 {
+    MovementSpeed = SPEED;
+    MouseSensitivity = SENSITIVITY;
+    Zoom = ZOOM;
+    Front = glm::vec3(0.0f, 0.0f, -1.0f);
+    
     Position = position;
     WorldUp = up;
     Yaw = yaw;
     Pitch = pitch;
     UpdateCameraVectors();
 }
-AS_Camera::AS_Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+
+AS_Camera::AS_Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
 {
+    MovementSpeed = SPEED;
+    MouseSensitivity = SENSITIVITY;
+    Zoom = ZOOM;
+    Front = glm::vec3(0.0f, 0.0f, -1.0f);
+    
     Position = glm::vec3(posX, posY, posZ);
     WorldUp = glm::vec3(upX, upY, upZ);
     Yaw = yaw;
@@ -35,7 +46,7 @@ void AS_Camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrai
     xoffset *= MouseSensitivity;
     yoffset *= MouseSensitivity;
 
-    Yaw   += xoffset;
+    Yaw += xoffset;
     Pitch += yoffset;
 
     // make sure that when pitch is out of bounds, screen doesn't get flipped
@@ -51,9 +62,9 @@ void AS_Camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrai
     UpdateCameraVectors();
 }
 
-void AS_Camera::ProcessMouseScroll(float yoffset)
+void AS_Camera::ProcessMouseScroll(float yOffset)
 {
-    Zoom -= (float)yoffset;
+    Zoom -= yOffset;
     if (Zoom < 1.0f)
         Zoom = 1.0f;
     if (Zoom > 45.0f)
@@ -68,7 +79,10 @@ void AS_Camera::UpdateCameraVectors()
     front.y = sin(glm::radians(Pitch));
     front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
     Front = glm::normalize(front);
+    
     // also re-calculate the Right and Up vector
-    Right = glm::normalize(glm::cross(Front, WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-    Up    = glm::normalize(glm::cross(Right, Front));
+    Right = glm::normalize(glm::cross(Front, WorldUp));
+    
+    // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+    Up = glm::normalize(glm::cross(Right, Front));
 }
