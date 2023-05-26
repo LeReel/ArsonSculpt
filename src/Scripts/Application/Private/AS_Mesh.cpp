@@ -5,7 +5,7 @@ AS_Mesh::AS_Mesh()
 {
 }
 
-AS_Mesh::AS_Mesh(std::vector<Vertex> _vertices, std::vector<unsigned> _indices, std::vector<Texture> _textures)
+AS_Mesh::AS_Mesh(std::vector<AS_Vertex> _vertices, std::vector<unsigned> _indices, std::vector<AS_Texture> _textures)
 {
     vertices = _vertices;
     indices = _indices;
@@ -60,7 +60,7 @@ void AS_Mesh::SetupMesh()
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER,
-                 vertices.size() * sizeof(Vertex),
+                 vertices.size() * sizeof(AS_Vertex),
                  &vertices[0],
                  GL_STATIC_DRAW);
 
@@ -76,7 +76,7 @@ void AS_Mesh::SetupMesh()
                           3,
                           GL_FLOAT,
                           GL_FALSE,
-                          sizeof(Vertex),
+                          sizeof(AS_Vertex),
                           (void*)0);
 
     // Vertex normals
@@ -85,8 +85,8 @@ void AS_Mesh::SetupMesh()
                           3,
                           GL_FLOAT,
                           GL_FALSE,
-                          sizeof(Vertex),
-                          (void*)offsetof(Vertex, Normal));
+                          sizeof(AS_Vertex),
+                          (void*)offsetof(AS_Vertex, Normal));
 
     // Vertex textCoords
     glEnableVertexAttribArray(2);
@@ -94,8 +94,8 @@ void AS_Mesh::SetupMesh()
                           2,
                           GL_FLOAT,
                           GL_FALSE,
-                          sizeof(Vertex),
-                          (void*)offsetof(Vertex, TexCoords));
+                          sizeof(AS_Vertex),
+                          (void*)offsetof(AS_Vertex, TexCoords));
 
     glBindVertexArray(0);
 }
