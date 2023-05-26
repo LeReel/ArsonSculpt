@@ -1,6 +1,10 @@
 ﻿#include "AS_Mesh.h"
 #include "AS_Shader.h"
 
+AS_Mesh::AS_Mesh()
+{
+}
+
 AS_Mesh::AS_Mesh(std::vector<Vertex> _vertices, std::vector<unsigned> _indices, std::vector<Texture> _textures)
 {
     vertices = _vertices;

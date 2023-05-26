@@ -29,6 +29,7 @@ class AS_Mesh
     unsigned int VAO = 0, VBO = 0, EBO = 0;
 
 public:
+    AS_Mesh();
     AS_Mesh(std::vector<Vertex> _vertices, std::vector<unsigned int> _indices, std::vector<Texture> _textures);
     void Draw(AS_Shader& _shader);
 
