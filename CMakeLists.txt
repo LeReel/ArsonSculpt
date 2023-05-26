@@ -24,6 +24,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/rpavlik-cmake-module
 include(CreateLaunchers)
 include(MSVCMultipleProcessCompile) # /MP
 
+configure_file(configuration/root_directory.h.in configuration/root_directory.h)
+include_directories(${CMAKE_BINARY_DIR}/configuration/)
+
 if(INCLUDE_DISTRIB)
 	add_subdirectory(distrib)
 endif(INCLUDE_DISTRIB)
@@ -32,7 +35,7 @@ include_directories(
 	external/glfw-3.1.2/include/
 	external/glm-0.9.9.8/
 	external/glew-1.13.0/include/
-	external/assimp-3.0.1270/include
+	external/assimp-3.0.1270/include/
 	
 	src/Scripts/Application/Public/
 	
