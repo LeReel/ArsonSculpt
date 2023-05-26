@@ -57,6 +57,7 @@ add_definitions(
 add_executable(ArsonS_GL
 	src/Scripts/main.cpp
 	src/Scripts/stb_image.h
+	src/Scripts/filesystem.h
 	
 	#Add new scripts here
 	src/Scripts/Application/Public/AS_Application.h
