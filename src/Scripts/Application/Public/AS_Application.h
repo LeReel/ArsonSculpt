@@ -19,6 +19,7 @@
 
 class AS_Application
 {
+    
 public:
     AS_Application();
     ~AS_Application();
@@ -38,6 +39,6 @@ private:
     int OpenWindow();
 
     int InitGLEW();
-
+    
     void DeallocateAllResources();
 };
