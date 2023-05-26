@@ -67,6 +67,9 @@ add_executable(ArsonS_GL
 	
 	src/Scripts/Application/Public/AS_Camera.h
 	src/Scripts/Application/Private/AS_Camera.cpp
+	
+	src/Scripts/Application/Public/AS_Mesh.h
+	src/Scripts/Application/Private/AS_Mesh.cpp
 
 	src/SimpleVertexShader.glsl
 	src/SimpleFragmentShader.glsl
