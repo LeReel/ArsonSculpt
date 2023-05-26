@@ -1,24 +1,16 @@
 ﻿#pragma once
-#include <vector>
-#include <string>
+#include "AS_Mesh.h"
+#include "AS_Shader.h"
 
-enum aiTextureType : int;
-struct aiMaterial;
-// Assimp
-struct aiMesh;
-struct aiScene;
-struct aiNode;
-
-struct Texture;
-
-class AS_Mesh;
-class AS_Shader;
+#include "assimp/Importer.hpp"
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
 
 class AS_Model
 {
 public:
 
-    AS_Model(char* _path)
+    AS_Model(std::string _path)
     {
         LoadModel(_path);
     }
@@ -28,10 +20,16 @@ private:
     // Model Data
     std::vector<AS_Mesh> meshes;
     std::string directory;
+
+    std::vector<AS_Texture> loadedTextures;
+
+    AS_Mesh processedMesh;
     
-    void LoadModel(char* _path);
-    std::vector<Texture> LoadMaterialTextures(aiMaterial* _material, aiTextureType* _type, std::string _typeName);
+    void LoadModel(std::string _path);
+    std::vector<AS_Texture> LoadMaterialTextures(aiMaterial* _material, aiTextureType _type, std::string _typeName);
     
     void ProcessNode(aiNode* _node, const aiScene* _scene);
-    AS_Mesh ProcessMesh(aiMesh* _mesh, const aiScene* _scene);
+    void ProcessMesh(aiMesh* _mesh, const aiScene* _scene);
+
+    unsigned int TextureFromFile(const char* _path, const std::string& _directory, bool _gamma = false);
 };
