@@ -5,7 +5,6 @@
 
 AS_Model::AS_Model()
 {
-    
 }
 
 void AS_Model::Draw(AS_Shader& _shader)

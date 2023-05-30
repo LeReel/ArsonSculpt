@@ -4,9 +4,6 @@
 
 class AS_Application
 {
-    //AS_Model m_model;
-    //AS_Shader m_shader;
-    
 public:
     AS_Application();
     ~AS_Application();
@@ -16,7 +13,7 @@ public:
     int Run();
 
 private:
-    void MainLoop(AS_Shader _shader, AS_Model _model);
+    void MainLoop(AS_Shader _shader, std::vector<AS_Model> _models);
 
     int Init();
     int InitGLModules();
@@ -26,6 +23,6 @@ private:
     int OpenWindow();
 
     int InitGLEW();
-    
+
     void DeallocateAllResources();
 };
