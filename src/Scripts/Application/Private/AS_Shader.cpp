@@ -1,5 +1,10 @@
 ﻿#include "AS_Shader.h"
 
+AS_Shader::AS_Shader()
+{
+    
+}
+
 AS_Shader::AS_Shader(const char* _vertexPath, const char* _fragmentPath)
 {
     // 1. Retrieve the vertex/fragment source code from filePath

@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "AS_Mesh.h"
-#include "AS_Shader.h"
 
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
@@ -10,6 +9,7 @@ class AS_Model
 {
 public:
 
+    AS_Model();
     AS_Model(std::string _path)
     {
         LoadModel(_path);

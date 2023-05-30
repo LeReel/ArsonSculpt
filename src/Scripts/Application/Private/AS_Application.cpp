@@ -1,9 +1,5 @@
 #include "AS_Application.h"
 
-#include "AS_Camera.h"
-
-#include "AS_Model.h"
-
 #include "src/Scripts/filesystem.h"
 
 //Declare window as global otherwise create an unresolved ext. error
@@ -73,7 +69,7 @@ void AS_Application::ProcessInput(GLFWwindow* _window)
         glfwSetWindowShouldClose(window, true);
 
     float cameraSpeed = static_cast<float>(5 * deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.ProcessKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         camera.ProcessKeyboard(BACKWARD, deltaTime);
@@ -83,17 +79,16 @@ void AS_Application::ProcessInput(GLFWwindow* _window)
         camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
-AS_Shader myShader(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
-//TODO: Add object and(?) configure path
-AS_Model myModel(FileSystem::getPath("resources/objects/backpack/backpack.obj"));
-
 int AS_Application::Run()
 {
     if (Init() == -1)
     {
         return -1;
     }
-    
+
+    AS_Shader myShader(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
+    AS_Model myModel("../resources/objects/cars/Plane_Car.obj");
+
     // Check if the ESC key was pressed or the window was closed
     while (!glfwWindowShouldClose(window))
     {
@@ -103,7 +98,7 @@ int AS_Application::Run()
 
         ProcessInput(window);
 
-        MainLoop();
+        MainLoop(myShader, myModel);
     }
 
     //TODO: Implement in objects/meshes ?
@@ -114,26 +109,30 @@ int AS_Application::Run()
     return 0;
 }
 
-void AS_Application::MainLoop()
+void AS_Application::MainLoop(AS_Shader _shader, AS_Model _model)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    myShader.Use();
+
+    _shader.Use();
 
     // view/projection transformations
-    glm::mat4 _projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
-                                            100.0f);
+    glm::mat4 _projection = glm::perspective(glm::radians(camera.Zoom),
+                                             (float)SCR_WIDTH / (float)SCR_HEIGHT,
+                                             0.1f,
+                                             500.0f);
     glm::mat4 _view = camera.GetViewMatrix();
-    myShader.SetMat4("projection", _projection);
-    myShader.SetMat4("view", _view);
+    _shader.SetMat4("projection", _projection);
+    _shader.SetMat4("view", _view);
 
     // render the loaded model
-    glm::mat4 _model = glm::mat4(1.0f);
-    _model = glm::translate(_model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-    _model = glm::scale(_model, glm::vec3(1.0f, 1.0f, 1.0f)); // it's a bit too big for our scene, so scale it down
-    myShader.SetMat4("model", _model);
+    glm::mat4 _modelMat = glm::mat4(1.0f);
+    _modelMat = glm::translate(_modelMat, glm::vec3(0.0f, 0.0f, 0.0f));
+    // translate it down so it's at the center of the scene
+    _modelMat = glm::scale(_modelMat, glm::vec3(1.0f, 1.0f, 1.0f));
+    // it's a bit too big for our scene, so scale it down
+    _shader.SetMat4("model", _modelMat);
 
-    myModel.Draw(myShader);
+    _model.Draw(_shader);
 
     glfwSwapBuffers(window);
     glfwPollEvents();

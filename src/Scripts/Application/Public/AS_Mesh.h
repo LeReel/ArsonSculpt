@@ -1,11 +1,5 @@
 ﻿#pragma once
-#include <string>
-#include <vector>
-
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-
-class AS_Shader;
+#include "AS_Camera.h"
 
 struct AS_Vertex
 {

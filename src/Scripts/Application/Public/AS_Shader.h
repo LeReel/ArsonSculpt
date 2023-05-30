@@ -3,10 +3,27 @@
 #ifndef SHADER_H
 #define SHADER_H
 
+// Include GLEW.
+// Always include it before gl.h and glfw3.h, since it's a bit magic.
 #include <GL/glew.h>
+
+// Include GLFW
+#include <GLFW/glfw3.h>
+
+// Include GLM (3D maths)
 #include <glm/glm.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
+#include <glm/gtc/type_ptr.hpp>
+
+#include <GL/glew.h>
   
+// Include standard headers
+#include <stdio.h>
+#include <stdlib.h>
 #include <string>
+#include <vector>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -15,8 +32,9 @@ class AS_Shader
 {
 public:
     //ProgramID
-    unsigned int ProgramID;
+    unsigned int ProgramID = 0;
 
+    AS_Shader();    
     //Constructor reads and builds the shader 
     AS_Shader(const char* _vertexPath, const char* _fragmentPath);
 

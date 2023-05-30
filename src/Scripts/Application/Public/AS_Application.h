@@ -1,24 +1,11 @@
 #pragma once
-
-// Include standard headers
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-
-// Include GLEW.
-// Always include it before gl.h and glfw3.h, since it's a bit magic.
-#include <GL/glew.h>
-
-// Include GLFW
-#include <GLFW/glfw3.h>
-
-// Include GLM (3D maths)
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
-#include <glm/gtc/type_ptr.hpp>
+#include "AS_Model.h"
+//! Shader -> Camera -> Mesh -> Model -> Application
 
 class AS_Application
 {
+    //AS_Model m_model;
+    //AS_Shader m_shader;
     
 public:
     AS_Application();
@@ -29,7 +16,7 @@ public:
     int Run();
 
 private:
-    void MainLoop();
+    void MainLoop(AS_Shader _shader, AS_Model _model);
 
     int Init();
     int InitGLModules();

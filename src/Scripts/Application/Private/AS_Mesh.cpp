@@ -1,5 +1,4 @@
 ﻿#include "AS_Mesh.h"
-#include "AS_Shader.h"
 
 AS_Mesh::AS_Mesh()
 {

@@ -1,6 +1,12 @@
 ﻿#include "AS_Model.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "src/Scripts/stb_image.h"
+
+AS_Model::AS_Model()
+{
+    
+}
 
 void AS_Model::Draw(AS_Shader& _shader)
 {
@@ -177,10 +183,13 @@ unsigned AS_Model::TextureFromFile(const char* _path, const std::string& _direct
         {
         case 1:
             _format = GL_RED;
+            break;
         case 3:
             _format = GL_RGB;
+            break;
         case 4:
             _format = GL_RGBA;
+            break;
         default:
             break;
         }
