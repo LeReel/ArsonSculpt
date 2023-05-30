@@ -17,7 +17,9 @@ float deltaTime = 0.0f;
 AS_Camera camera(glm::vec3(0.0f, 0.0f, 25.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
+
 bool firstMouse = true;
+bool leftMousePressed = false;
 
 AS_Application::AS_Application()
 {
@@ -35,9 +37,19 @@ void framebuffer_size_callback(GLFWwindow* _window, int _width, int _height)
     glViewport(0, 0, _width, _height);
 }
 
+void mouse_button_callback(GLFWwindow* _window, int _button, int _action, int _mods)
+{
+    firstMouse = leftMousePressed = _button == GLFW_MOUSE_BUTTON_LEFT && _action == GLFW_PRESS;
+}
+
 //Listens to mouse-movement events
 void mouse_callback(GLFWwindow* _window, double _xPos, double _yPos)
 {
+    if (!leftMousePressed)
+    {
+        return;
+    }
+
     float xpos = static_cast<float>(_xPos);
     float ypos = static_cast<float>(_yPos);
 
@@ -87,7 +99,13 @@ int AS_Application::Run()
     }
 
     AS_Shader myShader(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
-    AS_Model myModel("../resources/objects/cars/Plane_Car.obj");
+
+    std::vector<AS_Model> _models;
+    AS_Model plane_car("../resources/objects/cars/Plane_Car/Plane_Car.obj");
+    AS_Model vazz("../resources/objects/cars/Vazz/Vazz.obj");
+
+    _models.push_back(plane_car);
+    _models.push_back(vazz);
 
     // Check if the ESC key was pressed or the window was closed
     while (!glfwWindowShouldClose(window))
@@ -98,7 +116,7 @@ int AS_Application::Run()
 
         ProcessInput(window);
 
-        MainLoop(myShader, myModel);
+        MainLoop(myShader, _models);
     }
 
     //TODO: Implement in objects/meshes ?
@@ -109,30 +127,34 @@ int AS_Application::Run()
     return 0;
 }
 
-void AS_Application::MainLoop(AS_Shader _shader, AS_Model _model)
+float angle = 0;
+
+void AS_Application::MainLoop(AS_Shader _shader, std::vector<AS_Model> _models)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     _shader.Use();
 
     // view/projection transformations
-    glm::mat4 _projection = glm::perspective(glm::radians(camera.Zoom),
+    glm::mat4 _projectionMat = glm::perspective(glm::radians(camera.Zoom),
                                              (float)SCR_WIDTH / (float)SCR_HEIGHT,
                                              0.1f,
                                              500.0f);
-    glm::mat4 _view = camera.GetViewMatrix();
-    _shader.SetMat4("projection", _projection);
-    _shader.SetMat4("view", _view);
+    glm::mat4 _viewMat = camera.GetViewMatrix();
+    _shader.SetMat4("projection", _projectionMat);
+    _shader.SetMat4("view", _viewMat);
 
-    // render the loaded model
     glm::mat4 _modelMat = glm::mat4(1.0f);
     _modelMat = glm::translate(_modelMat, glm::vec3(0.0f, 0.0f, 0.0f));
-    // translate it down so it's at the center of the scene
     _modelMat = glm::scale(_modelMat, glm::vec3(1.0f, 1.0f, 1.0f));
-    // it's a bit too big for our scene, so scale it down
+    _modelMat = glm::rotate(_modelMat, angle, glm::vec3(0, 1, 0));
+    angle+=deltaTime;
     _shader.SetMat4("model", _modelMat);
 
-    _model.Draw(_shader);
+    for (AS_Model _model : _models)
+    {
+        _model.Draw(_shader);
+    }
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -148,7 +170,7 @@ int AS_Application::Init()
     // Ensure we can capture the escape key being pressed below
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     //Hides the cursor and captures it
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
     glClearColor(0.3, 0.3, 0.3, 1);
     glEnable(GL_DEPTH_TEST);
@@ -219,6 +241,8 @@ int AS_Application::OpenWindow()
     glfwMakeContextCurrent(window);
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
