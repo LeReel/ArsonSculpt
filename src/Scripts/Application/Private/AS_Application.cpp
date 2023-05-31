@@ -106,7 +106,7 @@ int AS_Application::Run()
 
     std::vector<AS_Model> _models;
     AS_Model plane_car("../resources/objects/cars/Plane_Car/Plane_Car.obj");
-    AS_Model vazz("../resources/objects/cars/Vazz/Vazz.obj");
+    //AS_Model vazz("../resources/objects/cars/Vazz/Vazz.obj");
 
     _models.push_back(plane_car);
     //_models.push_back(vazz);
@@ -120,23 +120,14 @@ int AS_Application::Run()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        RenderUI();
-
         ProcessInput(window);
-
         MainLoop(myShader, _models);
-
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
     //TODO: Implement in objects/meshes ?
     DeallocateAllResources();
 
+    glfwDestroyWindow(window);
     glfwTerminate();
 
     return 0;
@@ -146,33 +137,19 @@ float angle = 0;
 
 void AS_Application::MainLoop(AS_Shader _shader, std::vector<AS_Model> _models)
 {
+    glfwPollEvents();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    _shader.Use();
-
-    // view/projection transformations
-    glm::mat4 _projectionMat = glm::perspective(glm::radians(camera.Zoom),
-                                                (float)SCR_WIDTH / (float)SCR_HEIGHT,
-                                                0.1f,
-                                                500.0f);
-    glm::mat4 _viewMat = camera.GetViewMatrix();
-    _shader.SetMat4("projection", _projectionMat);
-    _shader.SetMat4("view", _viewMat);
-
-    glm::mat4 _modelMat = glm::mat4(1.0f);
-    _modelMat = glm::translate(_modelMat, glm::vec3(0.0f, 0.0f, 0.0f));
-    _modelMat = glm::scale(_modelMat, glm::vec3(1.0f, 1.0f, 1.0f));
-    _modelMat = glm::rotate(_modelMat, angle, glm::vec3(0, 1, 0));
-    angle += deltaTime;
-    _shader.SetMat4("model", _modelMat);
+    RenderUI();
+    
+    ComputeCoordinateSystems(_shader);
 
     for (AS_Model _model : _models)
     {
         _model.Draw(_shader);
     }
-
+    
     glfwSwapBuffers(window);
-    glfwPollEvents();
 }
 
 int AS_Application::Init()
@@ -289,7 +266,36 @@ void AS_Application::InitIMGUI()
 
 void AS_Application::RenderUI()
 {
-    ImGui::ShowDemoWindow();
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    //UI code goes here
+    ImGui::Text("Hello le Hueco Mundo");
+    
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void AS_Application::ComputeCoordinateSystems(AS_Shader _shader)
+{
+    _shader.Use();
+    
+    // view/projection transformations
+    glm::mat4 _projectionMat = glm::perspective(glm::radians(camera.Zoom),
+                                                (float)SCR_WIDTH / (float)SCR_HEIGHT,
+                                                0.1f,
+                                                500.0f);
+    glm::mat4 _viewMat = camera.GetViewMatrix();
+    _shader.SetMat4("projection", _projectionMat);
+    _shader.SetMat4("view", _viewMat);
+
+    glm::mat4 _modelMat = glm::mat4(1.0f);
+    _modelMat = glm::translate(_modelMat, glm::vec3(0.0f, 0.0f, 0.0f));
+    _modelMat = glm::scale(_modelMat, glm::vec3(1.0f, 1.0f, 1.0f));
+    _modelMat = glm::rotate(_modelMat, angle, glm::vec3(0, 1, 0));
+    angle += deltaTime;
+    _shader.SetMat4("model", _modelMat);
 }
 
 void AS_Application::DeallocateAllResources()
@@ -298,5 +304,7 @@ void AS_Application::DeallocateAllResources()
     //glDeleteBuffers(2, VBOs);
     //glDeleteProgramsNV(2, shaderPrograms);
 
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 }

@@ -27,6 +27,7 @@ private:
     void InitIMGUI();
 
     void RenderUI();
+    void ComputeCoordinateSystems(AS_Shader _shader);
 
     void DeallocateAllResources();
 };
