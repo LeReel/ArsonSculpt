@@ -2,6 +2,10 @@
 
 #include "src/Scripts/filesystem.h"
 
+#include "src/Scripts/ImGUI/imgui.h"
+#include "src/Scripts/ImGUI/imgui_impl_glfw.h"
+#include "src/Scripts/ImGUI/imgui_impl_opengl3.h"
+
 //Declare window as global otherwise create an unresolved ext. error
 GLFWwindow* window;
 
@@ -105,7 +109,9 @@ int AS_Application::Run()
     AS_Model vazz("../resources/objects/cars/Vazz/Vazz.obj");
 
     _models.push_back(plane_car);
-    _models.push_back(vazz);
+    //_models.push_back(vazz);
+
+    InitIMGUI();
 
     // Check if the ESC key was pressed or the window was closed
     while (!glfwWindowShouldClose(window))
@@ -114,9 +120,18 @@ int AS_Application::Run()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        RenderUI();
+
         ProcessInput(window);
 
         MainLoop(myShader, _models);
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
     //TODO: Implement in objects/meshes ?
@@ -137,9 +152,9 @@ void AS_Application::MainLoop(AS_Shader _shader, std::vector<AS_Model> _models)
 
     // view/projection transformations
     glm::mat4 _projectionMat = glm::perspective(glm::radians(camera.Zoom),
-                                             (float)SCR_WIDTH / (float)SCR_HEIGHT,
-                                             0.1f,
-                                             500.0f);
+                                                (float)SCR_WIDTH / (float)SCR_HEIGHT,
+                                                0.1f,
+                                                500.0f);
     glm::mat4 _viewMat = camera.GetViewMatrix();
     _shader.SetMat4("projection", _projectionMat);
     _shader.SetMat4("view", _viewMat);
@@ -148,7 +163,7 @@ void AS_Application::MainLoop(AS_Shader _shader, std::vector<AS_Model> _models)
     _modelMat = glm::translate(_modelMat, glm::vec3(0.0f, 0.0f, 0.0f));
     _modelMat = glm::scale(_modelMat, glm::vec3(1.0f, 1.0f, 1.0f));
     _modelMat = glm::rotate(_modelMat, angle, glm::vec3(0, 1, 0));
-    angle+=deltaTime;
+    angle += deltaTime;
     _shader.SetMat4("model", _modelMat);
 
     for (AS_Model _model : _models)
@@ -262,9 +277,26 @@ int AS_Application::InitGLEW()
     return 0;
 }
 
+void AS_Application::InitIMGUI()
+{
+    ImGui::CreateContext();
+    ImGuiIO& _io = ImGui::GetIO();
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 130");
+}
+
+void AS_Application::RenderUI()
+{
+    ImGui::ShowDemoWindow();
+}
+
 void AS_Application::DeallocateAllResources()
 {
     //glDeleteVertexArrays(2, VAOs);
     //glDeleteBuffers(2, VBOs);
     //glDeleteProgramsNV(2, shaderPrograms);
+
+    ImGui::DestroyContext();
 }

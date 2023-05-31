@@ -32,7 +32,7 @@ if(INCLUDE_DISTRIB)
 endif(INCLUDE_DISTRIB)
 
 include_directories(
-	external/glfw-3.1.2/include/
+	external/glfw-3.3.8/include/
 	external/glm-0.9.9.8/
 	external/glew-1.13.0/include/
 	external/assimp-3.0.1270/include/
@@ -57,33 +57,21 @@ add_definitions(
 	-D_CRT_SECURE_NO_WARNINGS
 )
 
+file(GLOB_RECURSE APP_SRC CONFIGURE_DEPENDS "src/Scripts/Application/*.cpp" "src/Scripts/Application/*.h")
+file(GLOB_RECURSE IMGUI_SRC CONFIGURE_DEPENDS "src/Scripts/ImGUI/*.cpp" "src/Scripts/ImGUI/*.h")
+
 add_executable(ArsonS_GL
 	src/Scripts/main.cpp
 	src/Scripts/stb_image.h
 	src/Scripts/filesystem.h
 	
-	#Add new scripts here
-	src/Scripts/Application/Public/AS_Application.h
-	src/Scripts/Application/Private/AS_Application.cpp
-	
-	src/Scripts/Application/Public/AS_Shader.h
-	src/Scripts/Application/Private/AS_Shader.cpp
-	
-	src/Scripts/Application/Public/AS_Object.h
-	src/Scripts/Application/Private/AS_Object.cpp
-	
-	src/Scripts/Application/Public/AS_Camera.h
-	src/Scripts/Application/Private/AS_Camera.cpp
-	
-	src/Scripts/Application/Public/AS_Mesh.h
-	src/Scripts/Application/Private/AS_Mesh.cpp
-	
-	src/Scripts/Application/Public/AS_Model.h
-	src/Scripts/Application/Private/AS_Model.cpp
+	${APP_SRC}
+	${IMGUI_SRC}
 
 	src/SimpleVertexShader.glsl
 	src/SimpleFragmentShader.glsl
 )
+
 target_link_libraries(ArsonS_GL
 	${ALL_LIBS}
 )

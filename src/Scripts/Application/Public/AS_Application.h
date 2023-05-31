@@ -24,5 +24,9 @@ private:
 
     int InitGLEW();
 
+    void InitIMGUI();
+
+    void RenderUI();
+
     void DeallocateAllResources();
 };
