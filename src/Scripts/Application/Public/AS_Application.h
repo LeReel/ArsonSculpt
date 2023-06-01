@@ -4,6 +4,11 @@
 
 class AS_Application
 {
+    std::string m_FilePath;
+    std::string m_SelectedFile;
+    
+    std::vector<AS_Model> m_models;
+
 public:
     AS_Application();
     ~AS_Application();
@@ -25,6 +30,8 @@ private:
     int InitGLEW();
 
     void InitIMGUI();
+
+    void OpenFileExplorer();
 
     void RenderUI();
     void ComputeCoordinateSystems(AS_Shader _shader);
