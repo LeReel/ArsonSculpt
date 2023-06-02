@@ -27,7 +27,7 @@ void AS_Model::LoadModel(std::string _path)
         std::cout << "ERROR::ASSIMP::" << _importer.GetErrorString() << std::endl;
         return;
     }
-    directory = _path.substr(0, _path.find_last_of('/'));
+    directory = _path.substr(0, _path.find_last_of('/\\'));
 
     ProcessNode(_scene->mRootNode, _scene);
 }
@@ -167,7 +167,7 @@ void AS_Model::ProcessMesh(aiMesh* _mesh, const aiScene* _scene)
 unsigned AS_Model::TextureFromFile(const char* _path, const std::string& _directory, bool _gamma)
 {
     std::string _fileName = std::string(_path);
-    _fileName = _directory + '/' + _fileName;
+    _fileName = _directory + '\\' + _fileName;
 
     unsigned int _textureID;
     glGenTextures(1, &_textureID);
