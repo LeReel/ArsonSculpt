@@ -47,6 +47,7 @@ void framebuffer_size_callback(GLFWwindow* _window, int _width, int _height)
     glViewport(0, 0, _width, _height);
 }
 
+//Listens to mous-button events
 void mouse_button_callback(GLFWwindow* _window, int _button, int _action, int _mods)
 {
     firstMouse = leftMousePressed = _button == GLFW_MOUSE_BUTTON_LEFT && _action == GLFW_PRESS;
